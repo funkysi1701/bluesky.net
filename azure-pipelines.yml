@@ -11,9 +11,9 @@ variables:
   - name: BuildNumber
     value: $(Build.BuildNumber)
   - name: buildConfiguration
-    ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+    ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
       value: "Release"
-    ${{ if notIn(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+    ${{ if notIn(variables['Build.SourceBranch'], 'refs/heads/main') }}:
       value: "Debug"
   - name: nugetPushProjects
     value: "src/Qonq.BlueSky/Qonq.BlueSky.csproj"
@@ -26,7 +26,7 @@ trigger:
   branches:
     include:
     - develop
-    - master
+    - main
 
 pool: Docker
 
@@ -79,7 +79,7 @@ steps:
 
         - task: DotNetCoreCLI@2
           displayName: "dotnet pack"
-          condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['packagechanged'], 'true'))
+          condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['packagechanged'], 'true'))
           inputs:
             command: 'pack'
             packagesToPack: 'src/Qonq.BlueSky/Qonq.BlueSky.csproj'
@@ -88,7 +88,7 @@ steps:
 
         - task: DotNetCoreCLI@2
           displayName: "publish nuget package"
-          condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['packagechanged'], 'true'))
+          condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['packagechanged'], 'true'))
           inputs:
             command: 'push'
             packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
