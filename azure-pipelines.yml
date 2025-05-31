@@ -1,0 +1,96 @@
+---
+variables:
+  - name: CurrentDateTime
+    value: $(Get-Date -Format 'dd MMM yyyy')
+  - name: Build.Number.Major
+    value: 9
+  - name: Build.Number.Minor
+    value: 6
+  - name: Build.Number.Sub
+    value: 1    
+  - name: BuildNumber
+    value: $(Build.BuildNumber)
+  - name: buildConfiguration
+    ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+      value: "Release"
+    ${{ if notIn(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+      value: "Debug"
+  - name: nugetPushProjects
+    value: "src/Qonq.BlueSky/Qonq.BlueSky.csproj"
+
+name: $(Build.Number.Major).$(Build.Number.Minor).$(Build.Number.Sub).$(Rev:r)
+pr:
+  autoCancel: true
+trigger:
+  batch: true
+  branches:
+    include:
+    - develop
+    - master
+
+pool: Docker
+
+steps:
+        - task: UseDotNet@2
+          inputs:
+            packageType: 'sdk'
+            version: '9.x'
+            includePreviewVersions: true
+
+        - task: DotNetCoreCLI@2
+          displayName: "Restore"
+          inputs:
+            command: 'restore'
+            projects: 'src/Qonq.BlueSky.sln'
+            arguments: '--configuration $(BuildConfiguration)'
+            feedsToUse: 'select'
+            vstsFeed: '2c2a6a60-448c-4153-a1be-d2ce39bfbb0d'
+
+        - task: DotNetCoreCLI@2
+          displayName: "Build"
+          inputs:
+            command: 'build'
+            projects: 'src/Qonq.BlueSky.sln'
+            arguments: '--no-restore --configuration $(BuildConfiguration) --graph'
+
+        - powershell: |
+            $projectPath = "$(nugetPushProjects)"
+            $nugetProjectDirectory = [System.IO.Path]::GetDirectoryName($projectPath)
+            Write-Host $projectPath
+            Write-Host $nugetProjectDirectory
+            Write-Host "##vso[task.setvariable variable=nugetProjectDirectory;]$nugetProjectDirectory"
+          displayName: "Set NuGet project directory variable"
+
+        - powershell: |
+            $nugetProjectDirectory = "$(nugetProjectDirectory)" 
+            $output = git show -m HEAD --name-only --format=
+            if ($output -match "$nugetProjectDirectory") {
+              Write-Host "Client changes detected"
+              Write-Host "$output"
+              Write-Host "$nugetProjectDirectory"
+              Write-Host "##vso[task.setvariable variable=packagechanged;]true"
+            } else {
+              Write-Host "No client changes detected"
+              Write-Host "$output"
+              Write-Host "$nugetProjectDirectory"
+              Write-Host "##vso[task.setvariable variable=packagechanged;]false"
+            }  
+          displayName: "Check for Client changes"
+
+        - task: DotNetCoreCLI@2
+          displayName: "dotnet pack"
+          condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['packagechanged'], 'true'))
+          inputs:
+            command: 'pack'
+            packagesToPack: 'src/Qonq.BlueSky/Qonq.BlueSky.csproj'
+            nobuild: true
+            versioningScheme: 'byBuildNumber'
+
+        - task: DotNetCoreCLI@2
+          displayName: "publish nuget package"
+          condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['packagechanged'], 'true'))
+          inputs:
+            command: 'push'
+            packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+            nuGetFeedType: 'internal'
+            publishVstsFeed: $(nuget)
