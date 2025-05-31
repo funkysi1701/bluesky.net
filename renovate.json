@@ -1,0 +1,28 @@
+{
+  "packageRules": [
+    {
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "automerge": true
+    },
+    {
+      "extends": [
+        "packages:stylelint"
+      ],
+      "groupName": "stylelint packages"
+    },
+    {
+      "extends": [
+        "packages:eslint"
+      ],
+      "groupName": "eslint packages"
+    }
+  ],
+  "extends": [
+    "config:recommended"
+  ]
+}
