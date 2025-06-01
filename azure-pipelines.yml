@@ -3,11 +3,11 @@ variables:
   - name: CurrentDateTime
     value: $(Get-Date -Format 'dd MMM yyyy')
   - name: Build.Number.Major
-    value: $(Get-Date -Format 'yyyy')
+    value: 9
   - name: Build.Number.Minor
-    value: $(Get-Date -Format 'MM')
+    value: 6
   - name: Build.Number.Sub
-    value: $(Get-Date -Format 'dd')    
+    value: 1    
   - name: BuildNumber
     value: $(Build.BuildNumber)
   - name: buildConfiguration
@@ -18,7 +18,7 @@ variables:
   - name: nugetPushProjects
     value: "src/Qonq.BlueSky/Qonq.BlueSky.csproj"
 
-name: $(Get-Date -Format 'yyyy').$(Get-Date -Format 'MM').$(Get-Date -Format 'dd').$(Rev:r)
+name: $(Build.Number.Major).$(Build.Number.Minor).$(Build.Number.Sub).$(Rev:r)
 pr:
   autoCancel: true
 trigger:
@@ -84,7 +84,10 @@ steps:
             command: 'pack'
             packagesToPack: 'src/Qonq.BlueSky/Qonq.BlueSky.csproj'
             nobuild: true
-            versioningScheme: 'byBuildNumber'
+            versioningScheme: 'byPrereleaseNumber'
+            majorVersion: $(Get-Date -Format 'yyyy')
+            minorVersion: $(Get-Date -Format 'MM')
+            patchVersion: $(Get-Date -Format 'dd')
 
         - task: DotNetCoreCLI@2
           displayName: "publish nuget package"
