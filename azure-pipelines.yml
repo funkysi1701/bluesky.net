@@ -18,7 +18,7 @@ variables:
   - name: nugetPushProjects
     value: "src/Qonq.BlueSky/Qonq.BlueSky.csproj"
 
-name: $(Build.Number.Major).$(Build.Number.Minor).$(Build.Number.Sub).$(Rev:r)
+name: $(Get-Date -Format 'yyyy').$(Get-Date -Format 'MM').$(Get-Date -Format 'dd').$(Rev:r)
 pr:
   autoCancel: true
 trigger:
