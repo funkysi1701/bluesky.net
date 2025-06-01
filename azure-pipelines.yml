@@ -3,7 +3,7 @@ variables:
   - name: CurrentDateTime
     value: $(Get-Date -Format 'dd MMM yyyy')
   - name: Build.Number.Major
-    value: 2026
+    value: 9
   - name: Build.Number.Minor
     value: 6
   - name: Build.Number.Sub
@@ -84,7 +84,10 @@ steps:
             command: 'pack'
             packagesToPack: 'src/Qonq.BlueSky/Qonq.BlueSky.csproj'
             nobuild: true
-            versioningScheme: 'byBuildNumber'
+            versioningScheme: 'byPrereleaseNumber'
+            majorVersion: $(Get-Date -Format 'yyyy')
+            minorVersion: $(Get-Date -Format 'MM')
+            patchVersion: $(Get-Date -Format 'dd')
 
         - task: DotNetCoreCLI@2
           displayName: "publish nuget package"
