@@ -84,10 +84,8 @@ steps:
             command: 'pack'
             packagesToPack: 'src/Qonq.BlueSky/Qonq.BlueSky.csproj'
             nobuild: true
-            versioningScheme: 'byPrereleaseNumber'
-            majorVersion: $(Get-Date -Format 'yyyy')
-            minorVersion: $(Get-Date -Format 'MM')
-            patchVersion: $(Get-Date -Format 'dd')
+            versioningScheme: 'byEnvVar'
+            versionEnvVar: '$(Get-Date -Format ''yyyy'').$(Get-Date -Format ''MM'').$(Get-Date -Format ''dd'').$(Rev:r)'
 
         - task: DotNetCoreCLI@2
           displayName: "publish nuget package"
