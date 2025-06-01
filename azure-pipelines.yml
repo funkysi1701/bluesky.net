@@ -5,7 +5,7 @@ variables:
   - name: Build.Number.Major
     value: $(Get-Date -Format 'yyyy')
   - name: Build.Number.Minor
-    value: $(Get-Date -Format 'MMM')
+    value: $(Get-Date -Format 'MM')
   - name: Build.Number.Sub
     value: $(Get-Date -Format 'dd')    
   - name: BuildNumber
