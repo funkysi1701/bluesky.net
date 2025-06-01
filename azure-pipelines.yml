@@ -25,7 +25,6 @@ trigger:
   batch: true
   branches:
     include:
-    - develop
     - main
 
 pool: Docker
@@ -84,8 +83,7 @@ steps:
             command: 'pack'
             packagesToPack: 'src/Qonq.BlueSky/Qonq.BlueSky.csproj'
             nobuild: true
-            versioningScheme: 'byEnvVar'
-            versionEnvVar: '$(Get-Date -Format ''yyyy'').$(Get-Date -Format ''MM'').$(Get-Date -Format ''dd'').$(Rev:r)'
+            versioningScheme: 'byBuildNumber'
 
         - task: DotNetCoreCLI@2
           displayName: "publish nuget package"
