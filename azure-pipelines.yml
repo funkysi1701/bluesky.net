@@ -3,9 +3,9 @@ variables:
   - name: CurrentDateTime
     value: $(Get-Date -Format 'dd MMM yyyy')
   - name: Build.Number.Major
-    value: 9
+    value: 10
   - name: Build.Number.Minor
-    value: 6
+    value: 1
   - name: Build.Number.Sub
     value: 1    
   - name: BuildNumber
@@ -35,7 +35,7 @@ steps:
         - task: UseDotNet@2
           inputs:
             packageType: 'sdk'
-            version: '9.x'
+            version: '10.x'
             includePreviewVersions: true
 
         - task: DotNetCoreCLI@2
