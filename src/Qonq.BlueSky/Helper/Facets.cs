@@ -25,7 +25,7 @@ namespace Qonq.BlueSky.Helper
                 facets.Add(new Facet
                 {
                     Type = "app.bsky.richtext.facet",
-                    Index = new Index
+                    Index = new Model.Index
                     {
                         ByteStart = text.Utf16IndexToUtf8Index(start),
                         ByteEnd = text.Utf16IndexToUtf8Index(start + m.Groups[3].Value.Length + 1)
@@ -72,7 +72,7 @@ namespace Qonq.BlueSky.Helper
                 facets.Add(new Facet
                 {
                     Type = "app.bsky.richtext.facet",
-                    Index = new Index
+                    Index = new Model.Index
                     {
                         ByteStart = text.Utf16IndexToUtf8Index(index.start),
                         ByteEnd = text.Utf16IndexToUtf8Index(index.end)
@@ -105,7 +105,7 @@ namespace Qonq.BlueSky.Helper
                 facets.Add(new Facet
                 {
                     Type = "app.bsky.richtext.facet",
-                    Index = new Index
+                    Index = new Model.Index
                     {
                         ByteStart = text.Utf16IndexToUtf8Index(index),
                         ByteEnd = text.Utf16IndexToUtf8Index(index + tag.Length) // inclusive of last char
