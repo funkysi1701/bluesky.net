@@ -19,8 +19,14 @@ jobs:
         with:
           fetch-depth: 0
           ref: test
-      - name: create pull request
-        run: gh pr create -B main -H test --title 'Release ${{ steps.date.outputs.date }} Test to Main' --body 'Created by Github action' 
-          || gh pr edit -B main --title 'Release ${{ steps.date.outputs.date }} Test to Main' --body 'Created by Github action'
+      - name: Create pull request if changes exist
+        run: |
+          git fetch origin main
+          if git diff --quiet origin/main...origin/test; then
+            echo "No changes to PR. Skipping."
+            exit 0
+          fi
+          gh pr create -B main -H test --title "Release ${{ steps.date.outputs.date }} Test to Main" --body "Created by Github action" \
+            || gh pr edit -B main --title "Release ${{ steps.date.outputs.date }} Test to Main" --body "Created by Github action"
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
